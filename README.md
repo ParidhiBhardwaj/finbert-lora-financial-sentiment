@@ -1,65 +1,83 @@
-# FinBERT + LoRA: Financial Sentiment Analysis
+# FinBERT Fine-Tuning: Financial Sentiment Analysis
 
 ## Claim Statement
 
-We claim that applying LoRA fine-tuning to FinBERT will improve its financial sentiment classification performance compared to using the original, unmodified FinBERT model. We will test this by comparing their macro-F1 scores on the Twitter Financial News Sentiment dataset and evaluating whether the improvements transfer to real-world financial news headlines from Yahoo Finance.
+We claim that parameter-efficient fine-tuning using LoRA can improve FinBERT's financial sentiment classification performance while requiring fewer trainable parameters than full fine-tuning. We will test this by comparing zero-shot FinBERT, fully fine-tuned FinBERT, and FinBERT with LoRA adapters of different ranks (4, 8, and 12) on the Twitter Financial News Sentiment dataset and evaluating their ability to generalize to other financial sentiment datasets.
 
 ## Project Overview
 
 **Track:** Model and Demo Review
 
-**Research Question:** Does additional financial sentiment training improve FinBERT's ability to classify financial text, and does that improvement transfer to other financial news?
+**Research Question:** How do different fine-tuning approaches affect FinBERT's financial sentiment classification performance, and how well do the resulting models generalize to other financial sentiment datasets?
 
-FinBERT is a version of Google's BERT model that has been pretrained on financial text. This project investigates whether further fine-tuning an already financially pretrained model can improve its ability to classify financial sentiment.
+FinBERT is a BERT-based language model pretrained on financial text and fine-tuned for financial sentiment classification using the Financial PhraseBank dataset.
 
-We compare the original FinBERT model against a version fine-tuned using Low-Rank Adaptation (LoRA). LoRA is a parameter-efficient fine-tuning technique that updates a small number of additional parameters instead of updating all the model's weights.
+This project investigates whether additional training on the Twitter Financial News Sentiment dataset improves its performance and whether parameter-efficient fine-tuning methods, such as LoRA, can achieve results comparable to full fine-tuning while updating fewer parameters.
 
-## Dataset
+## Datasets
 
-**Primary Dataset:** Twitter Financial News Sentiment Dataset
+### Primary Dataset: Twitter Financial News Sentiment
 
-The dataset contains financial tweets labeled into three sentiment categories:
+The Twitter Financial News Sentiment dataset contains financial tweets labeled into three sentiment categories:
+
 - Bullish
 - Bearish
 - Neutral
 
-We will use the dataset to fine-tune and evaluate our models, using a consistent training and evaluation split.
+This dataset will be used to fine-tune and evaluate the models.
 
-**Secondary Dataset:** Yahoo Finance News Headlines
+### External Evaluation Datasets
 
-We also plan to apply both models to real-world financial news headlines from Yahoo Finance to explore whether the improvements transfer beyond the original Twitter dataset.
+We will also evaluate the models on additional financial sentiment datasets to examine how well they generalize to financial text outside the original Twitter dataset.
 
-## Models
+One potential external evaluation dataset is the Financial PhraseBank dataset.
 
-We will evaluate two model configurations:
+## Models and Experimental Setups
 
-1. **FinBERT (Baseline):** The original pretrained FinBERT model, without additional fine-tuning on our Twitter dataset.
-2. **FinBERT + LoRA:** The same pretrained FinBERT model, further fine-tuned on the Twitter Financial News Sentiment training data using LoRA.
+We will compare the following configurations:
 
-Both models will use the same underlying FinBERT checkpoint and tokenizer to make the comparison consistent.
+### 1. FinBERT Zero-Shot (Baseline)
+The original pretrained FinBERT model, evaluated without additional fine-tuning on the Twitter dataset.
+
+### 2. FinBERT Full Fine-Tuning
+FinBERT fine-tuned on the Twitter training dataset, updating as many model layers as computationally feasible.
+
+### 3. FinBERT + LoRA (Rank 4)
+FinBERT fine-tuned using Low-Rank Adaptation (LoRA) with a rank of 4.
+
+### 4. FinBERT + LoRA (Rank 8)
+FinBERT fine-tuned using LoRA with a rank of 8.
+
+### 5. FinBERT + LoRA (Rank 12)
+FinBERT fine-tuned using LoRA with a rank of 12.
+
+### Optional Experiment: AdaLoRA
+
+If time and computational resources permit, we may also explore AdaLoRA, an adaptive version of LoRA that dynamically allocates parameter budgets across model layers.
 
 ## Methodology
 
 Our project will follow these steps:
 
 1. Load and explore the Twitter Financial News Sentiment dataset.
-2. Prepare the training and evaluation splits.
-3. Evaluate the original FinBERT model on the held-out dataset.
-4. Apply LoRA to FinBERT and fine-tune it using the training data.
-5. Evaluate the fine-tuned model using the same held-out dataset.
-6. Compare the models using macro-F1 scores.
-7. Apply both models to Yahoo Finance news headlines and examine their predicted sentiment.
+2. Prepare consistent training, validation, and test splits.
+3. Evaluate the original FinBERT model without additional training (zero-shot).
+4. Fully fine-tune FinBERT on the Twitter training dataset.
+5. Apply LoRA to FinBERT and train separate configurations using ranks 4, 8, and 12.
+6. Evaluate all model configurations on the same held-out Twitter test set.
+7. Compare performance, trainable parameters, and computational requirements.
+8. Evaluate the models on additional financial sentiment datasets to examine generalization.
 
-## Evaluation
+## Evaluation Metrics
 
 Our primary evaluation metric will be **macro-F1**, which gives equal importance to all three sentiment classes: bullish, bearish, and neutral.
 
-We will compare:
-- Macro-F1 before and after LoRA fine-tuning.
-- Performance across individual sentiment classes.
-- Whether the fine-tuned model's predictions on external financial news differ from the original model's predictions.
+We will also examine:
 
-Since Yahoo Finance headlines do not come with ground-truth sentiment labels, this external evaluation will focus on prediction patterns and transferability rather than classification accuracy.
+- Precision and recall for each sentiment class.
+- Number and percentage of trainable parameters.
+- Training time and computational requirements.
+- Performance differences across external financial sentiment datasets.
 
 ## Technologies
 
@@ -80,4 +98,4 @@ Since Yahoo Finance headlines do not come with ground-truth sentiment labels, th
 
 ## Project Status
 
-In progress. We are currently exploring the dataset, setting up the models, and preparing our experimental workflow.
+In progress. We are preparing the datasets, implementing the different fine-tuning approaches, and setting up the experimental workflow.
